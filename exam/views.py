@@ -25,7 +25,7 @@ import time
 from google.api_core.exceptions import ResourceExhausted
 
 # Set up Gemini API
-API_KEY = "AIzaSyCEeOXu5AAOvR-gaA-EkialuEXfiqP20_w"
+API_KEY = "AIzaSyCEeOXu5AAOvRkialuEXfiqP20_w"
 genai.configure(api_key=API_KEY)
 gemini_model = genai.GenerativeModel("models/gemini-1.5-pro")
 # print("Using API Key:", API_KEY)
