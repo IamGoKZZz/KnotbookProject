@@ -1,0 +1,12 @@
+<h1>{{ module.name }}</h1>
+<ul>
+    {% for note in notes %}
+        <li><a href="{{ note.file.url }}" download>{{ note.file.name }}</a></li>
+    {% endfor %}
+</ul>
+<form method="post" enctype="multipart/form-data">
+    {% csrf_token %}
+    <input type="file" name="file" required>
+    <button type="submit">Upload</button>
+</form>
+<a href="{% url 'modules' module.subject.id %}">Back to Modules</a>

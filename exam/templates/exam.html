@@ -1,0 +1,190 @@
+{% load static %}
+{% include 'header.html' %}
+{% block content %}
+<hr style="border: 1px solid;  margin: 20px auto;">
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Exam</title>
+    <style>
+        .container {
+            width: 80%;
+            margin: 20px auto;
+            padding: 20px;
+            background: #fff;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+            border-radius: 8px;
+            padding-bottom: 30px;
+        }
+
+        h1 {
+            color: #333;
+            text-align: center;
+        }
+
+        .timer-box {
+            text-align: center;
+            font-size: 18px;
+            font-weight: bold;
+            color: red;
+            margin-bottom: 20px;
+        }
+
+        .question-block {
+            margin-bottom: 20px;
+            padding: 15px;
+            border-bottom: 1px solid #ddd;
+        }
+
+        .question-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+
+        .question-text {
+            font-size: 18px;
+            font-weight: bold;
+            display: flex;
+            align-items: center;
+        }
+
+        .voice-icon {
+            cursor: pointer;
+            font-size: 20px;
+            color: #007bff;
+            margin-left: 10px;
+        }
+
+        .voice-icon:hover {
+            color: #0056b3;
+        }
+
+        .options {
+            list-style-type: none;
+            padding-left: 0;
+        }
+
+        .options li {
+            margin: 8px 0;
+        }
+
+        label {
+            display: flex;
+            align-items: center;
+            font-size: 16px;
+            cursor: pointer;
+        }
+
+        input[type="radio"] {
+            margin-right: 10px;
+        }
+
+        .submit-btn {
+            display: block;
+            width: 100%;
+            background-color: #007bff;
+            color: white;
+            font-size: 18px;
+            padding: 10px;
+            border: none;
+            cursor: pointer;
+            border-radius: 5px;
+            margin-top: 20px;
+        }
+
+        .submit-btn:hover {
+            background-color: #0056b3;
+        }
+    </style>
+
+    <script>
+        let totalQuestions = {{ questions|length }}; 
+        let timer = totalQuestions * 60; // 1 minute per question
+
+        function startTimer() {
+            const timerElement = document.getElementById('timer');
+            const interval = setInterval(() => {
+                const minutes = Math.floor(timer / 60);
+                const seconds = timer % 60;
+                timerElement.textContent = `${minutes}:${seconds.toString().padStart(2, '0')}`;
+                timer--;
+
+                if (timer < 0) {
+                    clearInterval(interval);
+                    document.querySelector('form').submit();
+                }
+            }, 1000);
+        }
+
+        function speakText(text) {
+            let speech = new SpeechSynthesisUtterance(text);
+            speech.lang = 'en-US';
+            window.speechSynthesis.speak(speech);
+        }
+
+        function readQuestion(questionId) {
+            let questionText = document.getElementById(`question-${questionId}`).innerText;
+            let options = document.querySelectorAll(`.options-${questionId} label`);
+            let optionText = Array.from(options).map(option => option.innerText).join(", ");
+            
+            let fullText = questionText + ". Options are: " + optionText;
+            speakText(fullText);
+        }
+    </script>
+</head>
+<body onload="startTimer()">
+    <div class="container">
+        <h1>Online Exam</h1>
+        <div class="timer-box">
+            <p><strong>Time Remaining: <span id="timer"></span></strong></p>
+        </div>
+        
+        <form method="POST">
+            {% csrf_token %}
+            {% for question in questions %}
+            <div class="question-block">
+                <div class="question-header">
+                    <p class="question-text" id="question-{{ question.id }}">
+                        Q{{ forloop.counter }}. {{ question.question_text }}
+                    </p>
+                    <span class="voice-icon" onclick="readQuestion({{ question.id }})">🔊</span>
+                </div>
+                <ul class="options options-{{ question.id }}">
+                    <li>
+                        <label>
+                            <input type="radio" name="{{ question.id }}" value="A" required>
+                            A) {{ question.option_a }}
+                        </label>
+                    </li>
+                    <li>
+                        <label>
+                            <input type="radio" name="{{ question.id }}" value="B">
+                            B) {{ question.option_b }}
+                        </label>
+                    </li>
+                    <li>
+                        <label>
+                            <input type="radio" name="{{ question.id }}" value="C">
+                            C) {{ question.option_c }}
+                        </label>
+                    </li>
+                    <li>
+                        <label>
+                            <input type="radio" name="{{ question.id }}" value="D">
+                            D) {{ question.option_d }}
+                        </label>
+                    </li>
+                </ul>
+            </div>
+            {% endfor %}
+            <button type="submit" class="submit-btn">Submit Exam</button>
+        </form>
+    </div>
+
+    
+</body>
+
+</html>
+{% endblock %}
+{% include 'footer.html' %}

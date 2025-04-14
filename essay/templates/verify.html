@@ -1,0 +1,206 @@
+{% load static %}
+{% include 'header.html' %}
+{% block content %}
+<hr>
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Verify Questions</title>
+    <style>
+        /* body {
+            font-family: Arial, sans-serif;
+            margin: 20px;
+            padding: 20px;
+            background-color: #f4f4f4;
+        } */
+        .container {
+            max-width: 800px;
+            margin: 0 auto;
+            background: white;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+        }
+        h2 {
+            text-align: center;
+            margin-bottom: 20px;
+        }
+        .question-box {
+            border: 1px solid #ddd;
+            padding: 15px;
+            margin-bottom: 10px;
+            border-radius: 5px;
+            background: #fff;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+        .question {
+            font-size: 16px;
+            margin-bottom: 5px;
+        }
+        .answer {
+            font-size: 14px;
+            color: #555;
+        }
+        .btn-container {
+            display: flex;
+            justify-content: space-between;
+            margin-top: 20px;
+        }
+        button {
+            background-color: #007bff;
+            color: white;
+            border: none;
+            padding: 10px 15px;
+            cursor: pointer;
+            border-radius: 5px;
+        }
+        button:hover {
+            background-color: #0056b3;
+        }
+        .danger-btn {
+            background-color: #dc3545;
+        }
+        .danger-btn:hover {
+            background-color: #a71d2a;
+        }
+        .hidden {
+            display: none;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h2>Verify Generated Questions</h2>
+    
+        {% if generated_qa %}
+        <form id="finalize-form" action="{% url 'finalize_questions' %}" method="post">
+            {% csrf_token %}
+            <div id="qa-list">
+                {% for question, answer in generated_qa %}
+                <div class="question-box" id="qa-{{ forloop.counter }}">
+                    <div>
+                        <label class="question">{{ question }}</label>
+                        <p class="answer"><strong>Answer:</strong> {{ answer }}</p>
+                    </div>
+                    <button type="button" class="danger-btn" onclick="deleteQuestion(this, '{{ question }}', '{{ answer }}')">Delete</button>
+                    <input type="hidden" name="qa[]" value="{{ question }}|||{{ answer }}">
+                </div>
+                {% endfor %}
+            </div>
+
+            <div id="question-container"></div>
+
+            <div class="btn-container">
+                <button type="submit">Generate Test</button>
+                <button type="button" class="danger-btn" onclick="showRegenerateOptions()">Regenerate More Questions</button>
+            </div>
+        </form>
+
+        <div id="regenerate-options" class="hidden">
+            <label for="num_questions">Number of Questions:</label>
+            <input type="number" id="num_questions" min="1" value="5">
+            <label for="start_page">Start Page:</label>
+            <input type="number" id="start_page" min="1" value="1">
+            <button id="generate-btn" onclick="regenerateQuestions()">Generate</button>
+            <img id="loading-spinner" src="https://i.gifer.com/ZZ5H.gif" width="30px" alt="Generating..." style="display: none;">
+        </div>
+        
+        {% else %}
+        <p>No questions generated. Please try again.</p>
+        <a href="{% url 'upload_pdf' %}">
+            <button>Upload Another PDF</button>
+        </a>
+        {% endif %}
+    </div>
+    
+    <script>
+        function deleteQuestion(button, question, answer) {
+            let questionBox = button.parentElement;
+
+            fetch("{% url 'delete_question' %}", {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json",
+                    "X-CSRFToken": "{{ csrf_token }}"
+                },
+                body: JSON.stringify({ question: question, answer: answer })
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    questionBox.remove();
+                } else {
+                    alert("Failed to delete question. Please try again.");
+                }
+            })
+            .catch(error => console.error("Error:", error));
+        }
+
+        function showRegenerateOptions() {
+            document.getElementById("regenerate-options").classList.toggle("hidden");
+        }
+
+        function regenerateQuestions() {
+            let num_questions = document.getElementById("num_questions").value;
+            let start_page = document.getElementById("start_page").value;
+            let generateBtn = document.getElementById("generate-btn");
+            let spinner = document.getElementById("loading-spinner");
+            let questionContainer = document.getElementById("question-container");
+
+            spinner.style.display = "inline-block";
+            generateBtn.disabled = true;
+            generateBtn.innerText = "Generating..."; 
+
+            fetch("{% url 'regenerate_questions' %}", {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json",
+                    "X-CSRFToken": "{{ csrf_token }}"
+                },
+                body: JSON.stringify({
+                    num_questions: num_questions,
+                    start_page: start_page
+                })
+            })
+            .then(response => response.json())
+            .then(data => {
+                spinner.style.display = "none";
+                generateBtn.disabled = false;
+                generateBtn.innerText = "Generate";
+
+                if (data.success) {
+                    data.questions.forEach(qa => {
+                        let questionHtml = `
+                            <div class="question-box">
+                                <div>
+                                    <label class="question">${qa.question}</label>
+                                    <p class="answer"><strong>Answer:</strong> ${qa.answer}</p>
+                                </div>
+                                <button type="button" class="danger-btn" onclick="deleteQuestion(this, '${qa.question}', '${qa.answer}')">Delete</button>
+                                <input type="hidden" name="qa[]" value="${qa.question}|||${qa.answer}">
+                            </div>
+                        `;
+                        questionContainer.innerHTML += questionHtml;
+                    });
+                } else {
+                    alert("Error: " + data.error);
+                }
+            })
+            .catch(error => {
+                console.error("Error:", error);
+                spinner.style.display = "none";
+                generateBtn.disabled = false;
+                generateBtn.innerText = "Generate";
+                alert("An error occurred while generating questions.");
+            });
+        }
+    </script>
+</body>
+</html>
+{%endblock%}
+{%include 'footer.html' %}

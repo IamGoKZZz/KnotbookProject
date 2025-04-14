@@ -1,0 +1,90 @@
+
+{% include 'header.html' %}
+<hr>
+<br><br><br><br>
+
+<center>
+  <section class="contact_section long_section">
+    <div class="container">
+      <div class="row">
+        <div class="col-md-8">
+          <div class="form_container">
+            <div class="heading_container">
+              <h2>Feedback</h2>
+              <br><br>
+            </div>
+
+            <!-- Form to enable feedback with time limit -->
+            <form method="POST" action="{% url 'enable_feedback' %}" class="mb-4">
+              {% csrf_token %}
+              
+              <label for="start_time"><b>Start Time:</b></label>
+              <input type="datetime-local" id="start_time" name="start_time" required>
+
+              <label for="end_time"><b>End Time:</b></label>
+              <input type="datetime-local" id="end_time" name="end_time" required>
+
+              <button type="submit" class="btn btn-primary">Enable Feedback</button>
+            </form>
+
+            <!-- Display current feedback status -->
+            {% if feedback_status %}
+              <h3>Current Feedback Session:</h3>
+              <p><b>Start Time:</b> {{ feedback_status.start_time }}</p>
+              <p><b>End Time:</b> {{ feedback_status.end_time }}</p>
+              <p><b>Status:</b> {% if feedback_status.is_active %} Active {% else %} Inactive {% endif %}</p>
+
+              <!-- Button to disable feedback -->
+              <form method="POST" action="{% url 'disable_feedback' %}">
+                {% csrf_token %}
+                <button type="submit" class="btn btn-danger">Disable Feedback</button>
+              </form>
+            {% endif %}
+
+            <br><br>
+
+            <!-- Feedback Table -->
+            <table class="table table-striped">
+              <thead>
+                <tr>
+                  <th scope="col">Sl. No</th>
+                  <th scope="col">User ID</th>
+                  <th scope="col">Teacher Name</th>
+                  <th scope="col">Feedback</th>
+                </tr>
+              </thead>
+              <tbody>
+                {% for i in result %}
+                <tr>
+                  <td>{{ forloop.counter }}</td>
+                  <td>{{ i.user_id }}</td>
+                  <td>{{ i.teacher.name }}</td>
+                  <td>{{ i.feedback }}</td>
+                </tr>
+                {% endfor %}
+              </tbody>
+            </table>
+          </div>
+        </div>
+        
+        <!-- PDF Display Section -->
+        <div class="col-md-4">
+          <div class="pdf_container">
+            <h3>Feedback Report</h3>
+            {% if feedback_status.generated_pdf %}
+            <a href="{{ feedback_status.generated_pdf.url }}" target="_blank" class="btn btn-success">
+              Open Feedback Report
+            </a>
+                        {% else %}
+              <p>No feedback report available.</p>
+            {% endif %}
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+</center>
+
+{% include 'footer.html' %}
+viewfeedback.html
+Displaying feedback.html.

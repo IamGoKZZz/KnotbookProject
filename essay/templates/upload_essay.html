@@ -1,0 +1,192 @@
+
+{% load static %}
+{% include 'header.html' %}
+{% block content %}
+<hr>
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Upload PDF for QA Generation</title>
+
+    <!-- SweetAlert for better alerts -->
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+
+    <style>
+        /* Global Styles */
+        /* * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        } */
+
+        /* body {
+            font-family: 'Arial', sans-serif;
+            background: #f5f5f5;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            padding: 20px;
+        } */
+
+        /* Main Container */
+        .container {
+            width: 100%;
+            max-width: 600px;
+            background: white;
+            padding: 25px;
+            border-radius: 10px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+        }
+
+        /* Headings */
+        h2 {
+            text-align: center;
+            color: #333;
+            margin-bottom: 20px;
+        }
+
+        /* Form Styling */
+        form {
+            display: flex;
+            flex-direction: column;
+        }
+
+        .form-group {
+            margin-bottom: 15px;
+        }
+
+        label {
+            font-weight: bold;
+            margin-bottom: 5px;
+            display: block;
+            color: #333;
+        }
+
+        input, button {
+            width: 100%;
+            padding: 10px;
+            font-size: 16px;
+            border-radius: 5px;
+            border: 1px solid #ccc;
+            transition: 0.2s ease-in-out;
+        }
+
+        input:focus {
+            border-color: #666;
+        }
+
+        button {
+            background-color: #28a745;
+            color: white;
+            font-weight: bold;
+            cursor: pointer;
+            transition: background 0.3s;
+            border: none;
+            margin-top: 10px;
+        }
+
+        button:hover {
+            background-color: #218838;
+        }
+
+        /* Success Message */
+        .success-message {
+            color: green;
+            font-weight: bold;
+            margin-bottom: 15px;
+            text-align: center;
+        }
+
+        /* Responsive */
+        @media (max-width: 600px) {
+            .container {
+                padding: 20px;
+            }
+            .btn-container {
+            text-align: center;
+            margin-top: 20px;
+        }
+        .btn {
+            background-color: #007bff;
+            color: white;
+            border: none;
+            padding: 10px 15px;
+            text-decoration: none;
+            cursor: pointer;
+            border-radius: 5px;
+            display: inline-block;
+        }
+        .btn:hover {
+            background-color: #457db8;
+        }
+        }
+    </style>
+</head>
+<body>
+
+    <div class="container">
+        <h2>Generate a New Subjective Test</h2>
+
+        {% if message %}
+            <p class="success-message">{{ message }}</p>
+        {% endif %}
+
+        <form id="uploadForm" action="{% url 'upload_pdf' %}" method="POST" enctype="multipart/form-data">
+            {% csrf_token %}
+
+            <div class="form-group">
+                <label for="exam_title">Exam Title:</label>
+                <input type="text" name="exam_title" id="exam_title" required placeholder="Enter Exam Title">
+            </div>
+
+            <div class="form-group">
+                <label for="pdf">Choose PDF File:</label>
+                <input type="file" name="pdf" id="pdf" required>
+            </div>
+
+            <div class="form-group">
+                <label for="start_page">Start Page:</label>
+                <input type="number" name="start_page" id="start_page" min="1" required>
+            </div>
+
+            <div class="form-group">
+                <label for="num_questions">Number of Questions:</label>
+                <input type="number" name="num_questions" id="num_questions" min="1" required>
+            </div>
+
+            <button type="submit">Generate</button>
+        </form>
+        <div class="btn-container">
+            <a href="/test/" class="btn">Back to Home</a>
+        </div>
+    </div>
+
+    <!-- SweetAlert Confirmation -->
+    <script>
+        document.getElementById("uploadForm").addEventListener("submit", function(event) {
+            event.preventDefault(); // Prevent default form submission
+
+            Swal.fire({
+                title: "Processing...",
+                text: "Generating questions and answers, please wait.",
+                allowOutsideClick: false,
+                allowEscapeKey: false,
+                showConfirmButton: false,
+                didOpen: () => {
+                    Swal.showLoading();
+                }
+            });
+
+            // Submit the form after showing the loader
+            setTimeout(() => { this.submit(); }, 1000);
+        });
+    </script>
+
+</body>
+</html>
+{%endblock%}
+{%include 'footer.html' %}

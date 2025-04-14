@@ -1,0 +1,98 @@
+{% load static %}
+{% include 'header.html' %}
+{% block content %}
+<hr>
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Scorecard</title>
+    <style>
+        .container {
+            max-width: 800px;
+            margin: 0 auto;
+            background: white;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+            text-align: center;
+        }
+        h2 {
+            text-align: center;
+            color: #007BFF;
+        }
+        .score-details {
+            margin-bottom: 20px;
+            padding: 15px;
+            background: #eef4ff;
+            border-radius: 8px;
+        }
+        .question-container {
+            padding: 15px;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            background: #fff;
+            margin-bottom: 10px;
+            text-align: left;
+        }
+        .correct { color: green; font-weight: bold; }
+        .incorrect { color: red; font-weight: bold; }
+        .btn-container {
+            text-align: center;
+            margin-top: 20px;
+        }
+        .btn {
+            background-color: #007bff;
+            color: white;
+            border: none;
+            padding: 10px 15px;
+            text-decoration: none;
+            cursor: pointer;
+            border-radius: 5px;
+            display: inline-block;
+        }
+        .btn:hover {
+            background-color: #0056b3;
+        }
+        .score {
+            font-size: 25px;
+            font-weight: bold;
+            color: red;
+            text-align: center;
+            margin-top: 20px;
+        }
+    </style>
+</head>
+<body>
+    
+    <div class="container">
+        <h2>Test Scorecard - {{ exam_title }}</h2>
+        <p class="score">Your Score: {{ marks_obtained }}</p>
+        <div class="score-details">
+            <p><strong>Total Questions:</strong> {{ total_questions }}</p>
+            <p><strong>Total Marks:</strong> {{ total_marks }}</p>
+            <p><strong>TGPA (Test Grade Points):</strong> {{ tgpa }}</p>
+        </div>
+
+        
+
+        <h3>Detailed Answers:</h3>
+        {% for user_answer in user_answers %}
+        <div class="question-container">
+            <p><strong>Question:</strong> {{ user_answer.question }}</p>
+            <p><strong>Your Answer:</strong> {{ user_answer.user_response }}</p>
+            <p><strong>Marks Obtained:</strong> {{ user_answer.marks_obtained }}</p>
+        </div>
+        {% endfor %}
+
+        <div class="btn-container">
+            <a href="/test/" class="btn">Back to Home</a>
+        </div>
+    </div>
+
+</body>
+</html>
+{%endblock%}
+{%include 'footer.html' %}

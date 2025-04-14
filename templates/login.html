@@ -1,0 +1,75 @@
+{% load static %}
+{% include 'header.html' %}
+{% block content %}
+
+
+
+<hr>
+
+    <!-- Contact Start -->
+    <div class="container-fluid py-5">
+        <div class="container py-5">
+            <div class="text-center mb-5">
+                <h5 class="text-primary text-uppercase mb-3" style="letter-spacing: 5px;"></h5>
+                <h1>Login</h1>
+            </div>
+            <div class="row justify-content-center">
+                <div class="col-lg-8">
+                    <div class="contact-form bg-secondary rounded p-5">
+                        <div id="success"></div>
+                        <form name="sentMessage" id="contactForm" action="addlogin" method="POST" novalidate="">
+                            {% csrf_token %}
+                            <div class="control-group">
+                                <input type="email" class="form-control border-0 p-4" id="Email" name="email" placeholder="Enter your Email" required="required" data-validation-required-message="Please enter your name" />
+                                <p class="help-block text-danger"></p>
+                            </div>
+                            <div class="control-group">
+                                <input type="password" class="form-control border-0 p-4" id="Password" name="password" placeholder="Enter your Password" required="required" data-validation-required-message="Please enter your email" />
+                                <p class="help-block text-danger"></p>
+                            </div>
+                            
+                            <div class="text-center">
+                                <button class="btn btn-primary py-3 px-5" type="submit" id="Submit">Login</button>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <!-- Contact End -->
+
+
+    
+    <!-- Contact Javascript File -->
+    <script src="mail/jqBootstrapValidation.min.js"></script>
+    <script src="mail/contact.js"></script>
+
+    <!-- Template Javascript -->
+    <script src="{% static 'js/main.js' %}"></script>
+</body>
+{% if login_status == 'success' %}
+    <script>
+        Swal.fire({
+            icon: 'success',
+            title: 'Login Successful!',
+            text: 'Welcome to the portal.',
+            showConfirmButton: false,
+            timer: 1500
+        }).then(() => {
+            window.location.href = "{% url redirect_url %}";  // Redirect to the specified route after success
+        });
+    </script>
+{% elif login_status == 'failed' %}
+    <script>
+        Swal.fire({
+            icon: 'error',
+            title: 'Invalid Credentials',
+            text: 'Please check your email and password.',
+        });
+    </script>
+{% endif %}
+</html>
+
+{% endblock %}
+{% include 'footer.html' %}

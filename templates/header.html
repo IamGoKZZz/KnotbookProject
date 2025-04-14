@@ -1,0 +1,202 @@
+{% load static %}
+{% block content %}
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="utf-8">
+    <title>KNOTBOOK</title>
+    <meta content="width=device-width, initial-scale=1.0" name="viewport">
+    <meta content="Free HTML Templates" name="keywords">
+    <meta content="Free HTML Templates" name="description">
+
+    <!-- SweetAlert2 CSS -->
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/sweetalert2@11.4.29/dist/sweetalert2.min.css">
+
+<!-- SweetAlert2 JS -->
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11.4.29/dist/sweetalert2.min.js"></script>
+
+<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+
+    <!-- Favicon -->
+    <link href="{% static 'img/favicon.ico' %}" rel="icon">
+
+    <!-- Google Web Fonts -->
+    <link rel="preconnect" href="https://fonts.gstatic.com">
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap" rel="stylesheet"> 
+
+    <!-- Font Awesome -->
+    <link href="{% static 'https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.10.0/css/all.min.css' %}" rel="stylesheet">
+
+    <!-- Libraries Stylesheet -->
+    <link href="{% static 'lib/owlcarousel/assets/owl.carousel.min.css' %}" rel="stylesheet">
+
+    <!-- Customized Bootstrap Stylesheet -->
+    <link href="{% static 'css/style.css' %}" rel="stylesheet">
+</head>
+
+<body>
+    <!-- Topbar Start -->
+    <div class="container-fluid d-none d-lg-block">
+        <div class="row align-items-center py-4 px-xl-5">
+            <div class="col-lg-3">
+                <a href="" class="text-decoration-none">
+                    <h1 class="m-0"><span class="text-primary">K</span>NOTBOOK</h1>
+                </a>
+            </div>
+            <div class="col-lg-3 text-right">
+                <div class="d-inline-flex align-items-center">
+                    <i class="fa fa-2x fa-map-marker-alt text-primary mr-3"></i>
+                    <div class="text-left">
+                        <h6 class="font-weight-semi-bold mb-1">Our Office</h6>
+                        <small>MBITS,Kothamangalam,
+                            Kerala, India</small>
+                    </div>
+                </div>
+            </div>
+            <div class="col-lg-3 text-right">
+                <div class="d-inline-flex align-items-center">
+                    <i class="fa fa-2x fa-envelope text-primary mr-3"></i>
+                    <div class="text-left">
+                        <h6 class="font-weight-semi-bold mb-1">Email Us</h6>
+                        <small>knotbook2@gmail.com</small>
+                    </div>
+                </div>
+            </div>
+            <div class="col-lg-3 text-right">
+                <div class="d-inline-flex align-items-center">
+                    <i class="fa fa-2x fa-phone text-primary mr-3"></i>
+                    <div class="text-left">
+                        <h6 class="font-weight-semi-bold mb-1">Call Us</h6>
+                        <small>+91 8547782912</small>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <!-- Topbar End -->
+
+
+    <!-- Navbar Start -->
+    <div class="container-fluid">
+        <div class="row border-top px-xl-5">
+            <div class="col-lg-3 d-none d-lg-block">
+                
+                <nav class="collapse position-absolute navbar navbar-vertical navbar-light align-items-start p-0 border border-top-0 border-bottom-0 bg-light" id="navbar-vertical" style="width: calc(100% - 30px); z-index: 9;">
+                    <div class="navbar-nav w-100">
+                        <div class="nav-item dropdown">
+                            <a href="#" class="nav-link" data-toggle="dropdown">Web Design <i class="fa fa-angle-down float-right mt-1"></i></a>
+                            <div class="dropdown-menu position-absolute bg-secondary border-0 rounded-0 w-100 m-0">
+                                <a href="" class="dropdown-item">HTML</a>
+                                <a href="" class="dropdown-item">CSS</a>
+                                <a href="" class="dropdown-item">jQuery</a>
+                            </div>
+                        </div>
+                        <a href="" class="nav-item nav-link">Apps Design</a>
+                        <a href="" class="nav-item nav-link">Marketing</a>
+                        <a href="" class="nav-item nav-link">Research</a>
+                        <a href="" class="nav-item nav-link">SEO</a>
+                    </div>
+                </nav>
+            </div>
+            <div class="col-lg-9">
+                <nav class="navbar navbar-expand-lg bg-light navbar-light py-3 py-lg-0 px-0">
+                    <a href="" class="text-decoration-none d-block d-lg-none">
+                        <h1 class="m-0"><span class="text-primary">E</span>COURSES</h1>
+                    </a>
+                    <button type="button" class="navbar-toggler" data-toggle="collapse" data-target="#navbarCollapse">
+                        <span class="navbar-toggler-icon"></span>
+                    </button>
+                    <div class="collapse navbar-collapse justify-content-between" id="navbarCollapse">
+                        {% if request.session.login_id %}
+                        <div class="navbar-nav py-0">
+                            <a href="/home" class="nav-item nav-link active">Home</a> 
+                                   <div class="nav-item dropdown">
+            <a href="#" class="nav-link dropdown-toggle" id="hodDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                HOD
+            </a>
+            <ul class="dropdown-menu" aria-labelledby="hodDropdown">
+                <li><a href="/hod" class="dropdown-item">Add HOD</a></li>
+                <li><a href="/viewhod" class="dropdown-item">View HOD</a></li>
+            </ul>
+        </div>
+
+                            <a href="/viewteacher" class="nav-item nav-link">View Teacher</a>
+                            
+                            <a href="/viewstd" class="nav-item nav-link">View Students</a>
+
+                           
+                            <a href="/logout" class="nav-item nav-link">Logout</a>
+
+                            {% elif request.session.hid %}
+                            <div class="navbar-nav">
+                                <a href="/home" class="nav-item nav-link active">HOME</a>
+                                {% comment %} <a href="/tech" class="nav-item nav-link">Add Teacher</a> {% endcomment %}
+                                <div class="nav-item dropdown">
+                                    <a href="#" class="nav-link dropdown-toggle" id="teacherDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                                        Teachers
+                                    </a>
+                                    <ul class="dropdown-menu" aria-labelledby="teacherDropdown">
+                                        <li><a href="/tech" class="dropdown-item">Add Teacher</a></li>
+                                        <li><a href="/viewteacher" class="dropdown-item">View Teacher</a></li>
+                                    </ul>
+                                </div>
+                                <div class="nav-item dropdown">
+                                    <a href="#" class="nav-link dropdown-toggle" id="stdDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                                        Students
+                                    </a>
+                                    <ul class="dropdown-menu" aria-labelledby="stdDropdown">
+                                        <li><a href="/addstudent" class="dropdown-item">Add Student</a></li>
+                                        <li><a href="/viewstd" class="dropdown-item">View Students</a></li>
+                                    </ul>
+                                </div>
+                                {% comment %} <a href="/addstudent" class="nav-item nav-link">Add Student</a> {% endcomment %}
+                                <a href="/add_subject" class="nav-item nav-link">Add Subjects</a>
+                                <!-- <a href="/assign" class="nav-item nav-link">Assign Teacher</a> -->
+                                {% comment %} <a href="/viewteacher" class="nav-item nav-link">View Teacher</a> {% endcomment %}
+                                {% comment %} <a href="/viewstd" class="nav-item nav-link">View Students</a> {% endcomment %}
+                                <a href="/test/" class="nav-item nav-link">Exam</a>
+                                <a href="/viewfeedback" class="nav-item nav-link">Feedback</a>
+                                
+                                <a href="/profile" class="nav-item nav-link">Profile</a>
+                                <a href="/logout" class="nav-item nav-link">Logout</a>
+                            
+                                {% elif request.session.tid %}
+                                <div class="navbar-nav py-0">
+                                    <a href="/home" class="nav-item nav-link active">Home</a>
+                                    
+                                    <a href="/viewstd" class="nav-item nav-link">View Students</a>
+                                    <a href="/test/" class="nav-item nav-link">Exam</a>
+
+                                    
+                                    <a href="/profile" class="nav-item nav-link">Profile</a>
+                                    <a href="/logout" class="nav-item nav-link">Logout</a>
+
+                                    {% elif request.session.sid %}
+                                    <div class="navbar-nav py-0">
+                                        <a href="/home" class="nav-item nav-link active">Home</a>
+                                        <a href="/test/" class="nav-item nav-link">Exam</a>
+                                        <a href="/feedback" class="nav-item nav-link">feedback</a>
+                                        <a href="{% url 'progress_report' %}" class="nav-item nav-link">Progress Report</a>
+                                        <a href="/profile" class="nav-item nav-link">Profile</a>
+                                        <a href="/logout" class="nav-item nav-link">Logout</a>
+
+                        {% else %}
+                        <a href="/" class="nav-item nav-link">Home</a>
+
+                        <a href="/login" class="nav-item nav-link">Login</a>
+
+
+                            
+                        
+                        </div>
+                        {% endif%}
+                        
+                    </div>
+                </nav>
+            </div>
+        </div>
+    </div>
+    <!-- Navbar End -->
+    {% endblock %}

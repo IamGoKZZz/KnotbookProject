@@ -1,0 +1,147 @@
+{% include 'header.html' %}
+{% block content %}
+
+<hr>
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <title>MCQ Performance Analysis</title>
+    
+    <!-- CanvasJS for Graphs -->
+    <script src="https://canvasjs.com/assets/script/canvasjs.min.js"></script>
+    
+    <!-- Bootstrap for responsiveness -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css">
+
+    <style>
+        h1 {
+            margin-bottom: 20px;
+        }
+        .chart-container {
+            width: 100%;
+            max-width: 700px;  /* Standardized width */
+            height: 320px;     /* Adjusted height */
+            margin: auto;
+            background: white;
+            border-radius: 10px;
+            padding: 15px;
+            box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.1);
+            transition: transform 0.2s ease-in-out;
+        }
+        .chart-container:hover {
+            transform: scale(1.02);
+        }
+        .row {
+            margin-bottom: 20px;
+            display: flex;
+            justify-content: center; /* Centers the graphs */
+            flex-wrap: wrap; /* Allows responsiveness */
+        }
+        .col-md-6 {
+            display: flex;
+            justify-content: center;
+        }
+        .average-tgpa {
+            font-size: 22px;
+            font-weight: bold;
+            color: #28a745;
+            text-align: center;
+            margin-bottom: 15px;
+        }
+    </style>
+</head>
+
+<body>
+    <center><h1>MCQ Performance Analysis</h1></center>
+
+    {% if overall_labels %}
+    <div class="container-fluid">
+        
+        <!-- Displaying Average TGPA -->
+        <div class="average-tgpa">
+             Average TGPA Score: <span>{{ average_tgpa }}</span>
+        </div>
+
+        <div class="row">
+            <!-- TGPA Line Chart (Previously Pie Chart) -->
+            <div class="col-md-6">
+                <div class="chart-container">
+                    <div id="tgpaLineChart" style="height: 320px; width: 100%;"></div>
+                </div>
+            </div>
+
+            <!-- Column Chart -->
+            <div class="col-md-6">
+                <div class="chart-container">
+                    <div id="mcqBarChart" style="height: 320px; width: 100%;"></div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Safely pass data using json_script -->
+    <script id="overallLabels" type="application/json">{{ overall_labels|safe }}</script>
+    <script id="overallScores" type="application/json">{{ overall_scores|safe }}</script>
+    <script id="tgpaLabels" type="application/json">{{ tgpa_labels|safe }}</script>
+    <script id="tgpaScores" type="application/json">{{ tgpa_scores|safe }}</script>
+
+    <script>
+        var overallLabels = JSON.parse(document.getElementById("overallLabels").textContent);
+        var overallScores = JSON.parse(document.getElementById("overallScores").textContent);
+        var tgpaLabels = JSON.parse(document.getElementById("tgpaLabels").textContent);
+        var tgpaScores = JSON.parse(document.getElementById("tgpaScores").textContent);
+
+        console.log("Overall Labels:", overallLabels);
+        console.log("Overall Scores:", overallScores);
+        console.log("TGPA Labels (Unique):", tgpaLabels);
+        console.log("TGPA Scores (Unique):", tgpaScores);
+
+        function renderBarChart() {
+            var chart = new CanvasJS.Chart("mcqBarChart", {
+                backgroundColor: "white",
+                animationEnabled: true,
+                theme: "light2",
+                title: { text: "MCQ Performance (Bar Chart)", fontSize: 20 },
+                axisX: { title: "Tests", labelAngle: -30 },
+                axisY: { title: "Marks Obtained", includeZero: true },
+                toolTip: { shared: true, animationEnabled: true },
+                legend: { verticalAlign: "top", horizontalAlign: "center" },
+                data: [{
+                    type: "column",
+                    name: "Total Marks",
+                    showInLegend: true,
+                    color: "rgba(75, 192, 192, 0.6)",
+                    dataPoints: overallLabels.map((label, index) => ({ label: label, y: overallScores[index] }))
+                }]
+            });
+            chart.render();
+        }
+
+        function renderLineChart() {
+            var chart = new CanvasJS.Chart("tgpaLineChart", {
+                backgroundColor: "white",
+                animationEnabled: true,
+                theme: "light2",
+                title: { text: "TGPA Performance Over Time", fontSize: 20 },
+                axisX: { title: "Test Titles", labelAngle: -30 },
+                axisY: { title: "TGPA Score", includeZero: true },
+                data: [{
+                    type: "line",
+                    name: "TGPA Score",
+                    showInLegend: true,
+                    color: "rgba(255, 99, 132, 0.8)",
+                    dataPoints: tgpaLabels.map((label, index) => ({ label: label, y: tgpaScores[index] }))
+                }]
+            });
+            chart.render();
+        }
+
+        renderBarChart();
+        renderLineChart();
+    </script>
+    {% endif %}
+</body>
+</html>
+
+{% endblock %}
+{% include 'footer.html' %}

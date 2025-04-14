@@ -1,0 +1,83 @@
+{% include 'header.html' %}
+{% block content %}
+<div class="container mt-5">
+    <h2 class="text-center">Student Progress Report</h2>
+    <div class="card mt-4">
+        <div class="card-body">
+            <p><strong>Student Name:</strong> {{ student_name }}</p>
+
+            <!-- Centered, Bold TGPA Display -->
+            <p class="text-center mt-3" style="font-size: 1.5rem; font-weight: bold;">
+                Your TGPA: {{ total_tgpa }}
+            </p>
+
+            <h4 class="mt-3">MCQ Tests</h4>
+            <table class="table table-bordered">
+                <thead class="table-dark">
+                    <tr>
+                        <th>Test Title</th>
+                        <th>TGPA</th>
+                        <th>Performance</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for test in mcq_tests %}
+                    <tr>
+                        <td>{{ test.test_title }}</td>
+                        <td>{{ test.latest_tgpa }}</td>
+                        {% if forloop.first %}
+                        <td rowspan="{{ mcq_tests|length }}" class="text-center align-middle">
+                            <p><strong>Average TGPA (MCQ):</strong> {{ avg_tgpa_mcq }}</p>
+                            <a href="{% url 'overall_mcq_performance' %}?student_id={{ student_id }}" class="btn btn-success btn-sm">
+                                View MCQ Performance
+                            </a>
+                        </td>
+                        {% endif %}
+                    </tr>
+                    {% empty %}
+                    <tr>
+                        <td colspan="3" class="text-center">No MCQ tests attended</td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+
+            <h4 class="mt-3">Subjective Tests</h4>
+            <table class="table table-bordered">
+                <thead class="table-dark">
+                    <tr>
+                        <th>Test Title</th>
+                        <th>TGPA</th>
+                        <th>Performance</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for test in subjective_tests %}
+                    <tr>
+                        <td>{{ test.exam_title }}</td>
+                        <td>{{ test.latest_tgpa }}</td>
+                        {% if forloop.first %}
+                        <td rowspan="{{ subjective_tests|length }}" class="text-center align-middle">
+                            <p><strong>Average TGPA (Subjective):</strong> {{ avg_tgpa_subjective }}</p>
+                            <a href="{% url 'test_performance' %}?student_id={{ student_id }}" class="btn btn-info btn-sm">
+                                View Subjective Performance
+                            </a>
+                        </td>
+                        {% endif %}
+                    </tr>
+                    {% empty %}
+                    <tr>
+                        <td colspan="3" class="text-center">No Subjective tests attended</td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+        <div class="text-center mt-4">
+            <a href="{% url 'home' %}" class="btn btn-primary">Back to Home</a>
+            
+        </div>
+    </div>
+</div>
+{% endblock %}
+{% include 'footer.html' %}

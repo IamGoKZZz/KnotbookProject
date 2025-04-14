@@ -1,0 +1,94 @@
+{% load static %}
+{% block content %}
+{% include 'header.html' %}
+<hr>
+    <!-- Contact Start -->
+    <div class="container-fluid py-5">
+        <div class="container py-5">
+            <div class="text-center mb-5">
+                <h5 class="text-primary text-uppercase mb-3" style="letter-spacing: 5px;">TEACHER</h5>
+                <h1>Registration</h1>
+            </div>
+            <div class="row justify-content-center">
+                <div class="col-lg-8">
+                    <div class="contact-form bg-secondary rounded p-5">
+                        <div id="success"></div>
+                        <form  action="addteacher" method="POST" enctype="multipart/form-data" >
+                            {% csrf_token %}
+                            
+                            <div class="control-group">
+                                <input type="name" class="form-control border-0 p-4" id="name" name="name" placeholder="Enter your name" required="required" data-validation-required-message="Please enter your email" />
+                                <p class="help-block text-danger"></p>
+                            </div>
+                            <div class="control-group">
+                                <input type="email" class="form-control border-0 p-4" id="email" name="email" placeholder="Enter your email" required="required" data-validation-required-message="Please enter your email" />
+                                <p class="help-block text-danger"></p>
+                            </div>
+                            <div class="control-group">
+                                <input type="phone" class="form-control border-0 p-4" id="phone" name="phone" placeholder="Enter your phonenumber" required="required" data-validation-required-message="Please enter your email" />
+                                <p class="help-block text-danger"></p>
+                            </div>
+                            <div class="control-group">
+                                <input type="password" class="form-control border-0 p-4" id="password" name="password" placeholder="Enter your password" required="required" data-validation-required-message="Please enter your email" />
+                                <p class="help-block text-danger"></p>
+                            </div>
+                            <div class="control-group">
+                                <input type="experience" class="form-control border-0 p-4" id="experience" name="experience" placeholder="Enter your experience" required="required" data-validation-required-message="Please enter your email" />
+                                <p class="help-block text-danger"></p>
+                            </div>
+                            <div class="control-group">
+                                <input type="qualification" class="form-control border-0 p-4" id="qualification" name="qualification" placeholder="Enter your qualification" required="required" data-validation-required-message="Please enter your email" />
+                                <p class="help-block text-danger"></p>
+                            </div>
+                            <div class="control-group">
+                                <input type="department" class="form-control border-0 p-4" id="department" name="department" placeholder="Enter your department" required="required" data-validation-required-message="Please enter your email" />
+                                <p class="help-block text-danger"></p>
+                            </div>
+                            <div class="control-group">
+                                <input type="dob" class="form-control border-0 p-4" id="dob" name="dob" placeholder="Enter your DOB" required="required" data-validation-required-message="Please enter your email" />
+                                <p class="help-block text-danger"></p>
+                            </div>
+                            <div class="control-group">
+                                <input type="file" class="form-control border-0 p-4" id="idproof" name="idproof" placeholder="idproof" required="required" />
+                                
+                            </div>
+
+                             <!-- Profile Picture Field -->
+                        <div class="control-group">
+                            Profile picture<input type="file" class="form-control border-0 p-4" id="profile_picture" name="profile_picture" placeholder="Upload your profile picture" />
+                            <p class="help-block text-danger"></p>
+                        </div>
+
+                            
+                            <div class="text-center">
+                                <button class="btn btn-primary py-3 px-5" type="submit" id="Submit">ADD</button>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <!-- Contact End -->
+
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    {% if messages %}
+        {% for message in messages %}
+            <script>
+                Swal.fire({
+                    title: "Success!",
+                    text: "{{ message }}",
+                    icon: "success",
+                    confirmButtonText: "OK"
+                });
+            </script>
+        {% endfor %}
+    {% endif %}
+    
+    
+  
+</body>
+
+</html>
+{% include 'footer.html' %}
+{% endblock %}

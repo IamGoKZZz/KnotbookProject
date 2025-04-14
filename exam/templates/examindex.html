@@ -1,0 +1,157 @@
+{% load static %}
+{% include 'header.html' %}
+
+{% block content %}
+<style>
+    .container {
+        width: 90%;
+        margin: 20px auto;
+        display: flex;
+        gap: 20px;
+    }
+
+    .section {
+        flex: 1;
+        padding: 20px;
+        background: #fff;
+        box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+        border-radius: 8px;
+    }
+
+    h1 {
+        text-align: center;
+        color: #333;
+    }
+
+    h2 {
+        color: #007BFF;
+        text-align: center;
+    }
+
+    ul {
+        list-style-type: none;
+        padding: 0;
+    }
+
+    li {
+        padding: 10px;
+        border-bottom: 1px solid #ddd;
+    }
+
+    li a {
+        text-decoration: none;
+        color: #333;
+    }
+
+    li a:hover {
+        color: #407cbc;
+    }
+
+    .btn {
+        display: inline-block;
+        padding: 10px 15px;
+        margin-top: 10px;
+        background-color: #237cdc;
+        color: white;
+        text-decoration: none;
+        border-radius: 5px;
+    }
+
+    .btn:hover {
+        background-color: #46719f;
+    }
+</style>
+
+<h1>Welcome to the Online Exam</h1>
+
+<div class="container">
+    <!-- MCQ Section -->
+    <div class="section">
+        <h2>MCQ Tests</h2>
+
+        {% if request.session.tid %}
+            <a href="http://127.0.0.1:8000/test/upload" class="btn">Generate New MCQ Test</a><br>
+        {% endif %}
+
+        {% if request.session.sid %}
+        <br><br><h4>Attended MCQ Tests</h4>
+        <ul>
+            {% if attended_mcq_tests %}
+                {% for title in attended_mcq_tests %}
+                    <li><a href="{% url 'scorecard_page_exam' exam_title=title %}">{{ title }}</a></li>
+                {% endfor %}
+            {% else %}
+                <li>No attended MCQ tests.</li>
+            {% endif %}
+        </ul>
+        {%endif%}
+        {% if request.session.sid %}
+        <br><h4>Non-Attended MCQ Tests</h4>
+        {%endif%}
+        {% if request.session.tid %}
+        <br><h4>Available MCQ Tests</h4>
+        {%endif%}
+
+        <ul>
+            {% if non_attended_mcq_tests %}
+                {% for title in non_attended_mcq_tests %}
+                    <li><a href="{% url 'exam' title=title %}">{{ title }}</a></li>
+                {% endfor %}
+            {% else %}
+                <li>No non-attended MCQ tests.</li>
+            {% endif %}
+        </ul>
+
+        {% if request.session.sid %}
+            <a href="{% url 'overall_mcq_performance' %}" class="btn">MCQ Performance</a>
+        {% elif request.session.tid or request.session.hid %}
+            <a href="{% url 'mcq_test_analysis' %}" class="btn">Test Analysis</a>
+        {% endif %}
+    </div>
+
+    <!-- Subjective Section -->
+    <div class="section">
+        <h2>Subjective Tests</h2>
+
+        {% if request.session.tid %}
+            <a href="/test/essay/" class="btn">Generate New Subjective Test</a><br>
+        {% endif %}
+        {% if request.session.sid %}
+        <br><br><h4>Attended Subjective Tests</h4>
+        
+        <ul>
+            {% if attended_subjective_tests %}
+                {% for exam_title in attended_subjective_tests %}
+                    <li><a href="{% url 'scorecard_page' exam_title=exam_title %}">{{ exam_title }}</a></li>
+                {% endfor %}
+            {% else %}
+                <li>No attended subjective tests.</li>
+            {% endif %}
+        </ul>
+        {% endif %}
+        {% if request.session.sid %}
+        <br><h4>Non-Attended MCQ Tests</h4>
+        {%endif%}
+        {% if request.session.tid %}
+        <br><h4>Available MCQ Tests</h4>
+        {%endif%}
+        <ul>
+            {% if non_attended_subjective_tests %}
+                {% for exam_title in non_attended_subjective_tests %}
+                    <li><a href="{% url 'result_page' exam_title=exam_title %}">{{ exam_title }}</a></li>
+                {% endfor %}
+            {% else %}
+                <li>No non-attended subjective tests.</li>
+            {% endif %}
+        </ul>
+
+        {% if request.session.sid %}
+            <a href="{% url 'test_performance' %}" class="btn">Test Performance</a>
+        {% elif request.session.tid or request.session.hid %}
+            <a href="{% url 'subjective_test_analysis' %}" class="btn">Test Analysis</a>
+        {% endif %}
+    </div>
+</div>
+
+{% endblock %}
+{% include 'footer.html' %}

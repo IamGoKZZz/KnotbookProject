@@ -1,0 +1,132 @@
+{% load static %}
+{% include 'header.html' %}
+{% block content %}
+<hr style="border: 1px solid; margin: 20px auto;">
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Scorecard</title>
+    <style>
+        .container {
+            width: 80%;
+            margin: 20px auto;
+            padding: 20px;
+            background: #fff;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+            border-radius: 8px;
+        }
+
+        h1 {
+            color: #333;
+            text-align: center;
+        }
+
+        .results {
+            margin-top: 20px;
+            padding: 10px;
+            border: 1px solid #ddd;
+            border-radius: 8px;
+        }
+
+        .results ul {
+            list-style-type: none;
+            padding: 0;
+        }
+
+        .results li {
+            margin-bottom: 10px;
+            padding: 10px;
+            border-bottom: 1px solid #ddd;
+        }
+
+        .total-score {
+            text-align: center;
+            font-size: 20px;
+            font-weight: bold;
+        }
+
+        .correct {
+            color: green;
+            font-weight: bold;
+        }
+
+        .incorrect {
+            color: red;
+            font-weight: bold;
+        }
+
+        .tick {
+            color: green;
+            font-size: 20px;
+        }
+
+        .cross {
+            color: red;
+            font-size: 20px;
+        }
+        
+        .tgpa {
+            text-align: center;
+            font-size: 22px;
+            font-weight: bold;
+            color: #1aa52a;
+        }
+
+        .btn-container {
+            text-align: center;
+            margin-top: 20px;
+        }
+        .btn {
+            background-color: #1aa52a;
+            color: white;
+            border: none;
+            padding: 10px 15px;
+            text-decoration: none;
+            cursor: pointer;
+            border-radius: 5px;
+            display: inline-block;
+        }
+        .btn:hover {
+            background-color: #6ff044;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Scorecard</h1>
+        <div class="results">
+            <h2><center>Your Score: {{ score }} / {{ total_questions }}</center></h2>
+            <p class="total-score">Correct Answers: {{ score }}</p>
+            <p>Total Questions: {{ total_questions }}</p>
+            <p class="tgpa">TGPA: {{ tgpa }} / 10</p>  <!-- Added TGPA display -->
+
+            <h3>Detailed Results</h3>
+            <ul>
+                {% for q in questions %}
+                <li>
+                    <strong>Q{{ forloop.counter }}:</strong> {{ q.question_text }}<br>
+
+                    <strong>Your Answer:</strong> 
+                    <span class="{% if q.is_correct %}correct{% else %}incorrect{% endif %}">
+                        {{ q.user_answer }}
+                        {% if q.is_correct %}
+                            <span class="tick">✅</span>
+                        {% else %}
+                            <span class="cross">❌</span>
+                        {% endif %}
+                    </span><br>
+
+                    <strong>Correct Answer:</strong> {{ q.correct_answer }}
+                </li>
+                {% endfor %}
+            </ul>
+        </div>
+        <div class="btn-container">
+            <a href="/test/" class="btn">Back to Home</a>
+        </div>
+    </div>
+</body>
+</html>
+{% endblock %}
+{% include 'footer.html' %}
+

@@ -1,0 +1,218 @@
+{% load static %}
+{% include 'header.html' %}
+{% block content %}
+<hr>
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Online Exam</title>
+    <style>
+        .container {
+            max-width: 1000px;
+            margin: 20px auto;
+            background: white;
+            padding: 30px;
+            border-radius: 8px;
+            box-shadow: 0 0 15px rgba(0, 0, 0, 0.2);
+        }
+        h2 {
+            text-align: center;
+            font-size: 28px;
+            font-weight: bold;
+            margin-bottom: 20px;
+        }
+        .timer {
+            font-size: 20px;
+            font-weight: bold;
+            text-align: center;
+            color: red;
+            margin-bottom: 20px;
+        }
+        .question-container {
+            padding: 20px;
+            border: 2px solid #ddd;
+            border-radius: 8px;
+            background: #f9f9f9;
+            margin-bottom: 15px;
+            position: relative;
+        }
+        .question {
+            font-weight: bold;
+            font-size: 18px;
+            color: #000;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        .speaker-btn {
+            background: none;
+            border: none;
+            cursor: pointer;
+            font-size: 20px;
+            color: black;
+        }
+        textarea {
+            width: 100%;
+            padding: 10px;
+            margin-top: 10px;
+            border: 2px solid #ccc;
+            border-radius: 5px;
+            resize: vertical;
+            font-size: 16px;
+        }
+        .mic-btn {
+            display: block;
+            margin-top: 5px;
+            background: none;
+            border: none;
+            cursor: pointer;
+            font-size: 22px;
+            color: #007BFF;
+            text-align: left;
+        }
+        .mic-btn:hover {
+            color: #0056b3;
+        }
+        .btn-container {
+            text-align: center;
+            margin-top: 20px;
+        }
+        button.submit-btn {
+            background-color: #007bff;
+            color: white;
+            border: none;
+            padding: 12px 20px;
+            font-size: 18px;
+            cursor: pointer;
+            border-radius: 5px;
+        }
+        button.submit-btn:hover {
+            background-color: #0056b3;
+        }
+    </style>
+    <script>
+        let examDuration = {{ questions_answers|length }} * 3 * 60; // Total time in seconds (3 minutes per question)
+        let activeRecognition = null;
+        let activeButton = null;
+
+        function startTimer() {
+            const timerElement = document.getElementById("exam-timer");
+            let interval = setInterval(() => {
+                let minutes = Math.floor(examDuration / 60);
+                let seconds = examDuration % 60;
+                timerElement.textContent = `Time Left: ${minutes}m ${seconds}s`;
+
+                if (examDuration <= 0) {
+                    clearInterval(interval);
+                    document.getElementById("exam-form").submit();
+                }
+
+                examDuration--;
+            }, 1000);
+        }
+
+        function readAloud(text) {
+            window.speechSynthesis.cancel(); // Stop any ongoing speech
+            const speech = new SpeechSynthesisUtterance(text);
+            speech.lang = 'en-US';
+            speech.pitch = 1;
+            speech.rate = 1;
+            window.speechSynthesis.speak(speech);
+        }
+
+        function toggleDictation(textareaId, buttonId) {
+            const textarea = document.getElementById(textareaId);
+            const button = document.getElementById(buttonId);
+
+            if (activeRecognition) {
+                activeRecognition.stop();
+                activeRecognition = null;
+                if (activeButton) {
+                    activeButton.textContent = '🎙️';
+                    activeButton.dataset.listening = "false";
+                }
+                return;
+            }
+
+            let recognition = new (window.SpeechRecognition || window.webkitSpeechRecognition)();
+            recognition.lang = 'en-US';
+            recognition.interimResults = false;
+            recognition.maxAlternatives = 1;
+            recognition.continuous = true;
+
+            activeRecognition = recognition;
+            activeButton = button;
+            button.dataset.listening = "true";
+            button.textContent = '⏹️ Stop';
+
+            recognition.onresult = function(event) {
+                const spokenText = event.results[event.results.length - 1][0].transcript;
+                textarea.value += spokenText + ' ';
+            };
+
+            recognition.onerror = function(event) {
+                console.error('Speech recognition error:', event.error);
+                alert('Speech recognition error: ' + event.error);
+                stopDictation();
+            };
+
+            recognition.onend = function() {
+                if (button.dataset.listening === "true") {
+                    recognition.start();
+                }
+            };
+
+            recognition.start();
+        }
+
+        function stopDictation() {
+            if (activeRecognition) {
+                activeRecognition.stop();
+                activeRecognition = null;
+            }
+            if (activeButton) {
+                activeButton.textContent = '🎙️';
+                activeButton.dataset.listening = "false";
+                activeButton = null;
+            }
+        }
+
+        window.onload = startTimer;
+    </script>
+</head>
+<body>
+
+    <div class="container">
+        <h2>Online Exam - {{ exam_title }}</h2>
+        <p class="timer" id="exam-timer">Time Left: Loading...</p>
+
+        <form method="POST" action="{% url 'result_page' exam_title=exam_title %}" id="exam-form">
+            {% csrf_token %}
+            
+            {% for qa in questions_answers %}
+                <div class="question-container">
+                    <div class="question">
+                        <span id="question_{{ qa.id }}">Q{{ forloop.counter }}: {{ qa.question }}</span>
+                        <button type="button" class="speaker-btn" onclick="readAloud(document.getElementById('question_{{ qa.id }}').textContent)">🔊</button>
+                    </div>
+                    <textarea id="response_{{ qa.id }}" name="response_{{ qa.id }}" rows="3" placeholder="Enter your answer here..."></textarea>
+                    <button id="stt_btn_{{ qa.id }}" type="button" class="mic-btn" onclick="toggleDictation('response_{{ qa.id }}', 'stt_btn_{{ qa.id }}')">
+                        🎙️
+                    </button>
+                </div>
+            {% endfor %}
+
+            <div class="btn-container">
+                <button type="submit" class="submit-btn">Submit Exam</button>
+            </div>
+        </form>
+
+    </div>
+
+</body>
+</html>
+{% endblock %}
+{% include 'footer.html' %}

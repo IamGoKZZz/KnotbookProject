@@ -1,0 +1,59 @@
+
+{% load static %}
+{% block content %}
+{% include 'header.html' %}
+<hr>
+
+<div class="container-fluid py-5">
+    <div class="container py-5">
+        <div class="text-center mb-5">
+            <h5 class="text-primary text-uppercase mb-3" style="letter-spacing: 5px;">Feedback</h5>
+            <h1>Provide Feedback</h1>
+        </div>
+        <div class="row justify-content-center">
+            <div class="col-lg-8">
+                <div class="contact-form bg-secondary rounded p-5">
+                    <div id="success"></div>
+                    <form action="addfeedback" method="POST" enctype="multipart/form-data">
+                        {% csrf_token %}
+                        
+                        <!-- Dropdown to Select Teacher -->
+                        <div class="form-group">
+                            <select class="form-control border-0 p-4" name="teacher_id" required>
+                                <option value="" disabled {% if not selected_teacher_id %}selected{% endif %}>
+                                    Select a Teacher
+                                </option>
+                                {% for teacher in teachers %}
+                                    <option value="{{ teacher.id }}" 
+                                        {% if teacher.id|stringformat:"s" == selected_teacher_id|stringformat:"s" %}selected{% endif %}>
+                                        {{ teacher.name }}
+                                    </option>
+                                {% endfor %}
+                            </select>
+                        </div>
+                        
+                        
+                        <!-- Feedback Input -->
+                        <div class="control-group">
+                            <input type="text" 
+                                   class="form-control border-0 p-4" 
+                                   id="feedback" 
+                                   name="feedback" 
+                                   placeholder="Enter your feedback"
+                                   required="required" 
+                                   value="{{ request.POST.feedback }}">
+                        </div>
+                        
+                        <!-- Submit Button -->
+                        <div class="text-center mt-3">
+                            <button class="btn btn-primary py-3 px-5" type="submit">Submit</button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+{% include 'footer.html' %}
+{% endblock %}

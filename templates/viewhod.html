@@ -1,0 +1,90 @@
+{% include 'header.html' %}
+<hr>
+<br>
+<br> 
+<br>
+<br>
+<center>
+  <section class="contact_section  long_section">
+    <div class="container">
+      <div class="row">
+        <div class="col-md-12">
+          <div class="form_container">
+            <div class="heading_container">
+              <h2>
+                View HODs
+              </h2>
+            </div>
+            <table class="table table-striped">
+                <thead>
+                    <tr>
+                        <th scope="col">slno</th>
+                        <th scope="col">name</th>
+                        <th scope="col">email</th>
+                        
+                        <th scope="col">phone</th>
+                        <th scope="col">experience</th>
+                       
+                        <th scope="col">dob</th>
+                        <th scope="col">department</th>
+                        <th scope="col">qualification</th>
+
+                        
+                        
+                        
+        
+                    </tr>
+                </thead>
+                <tbody>
+                    
+                    {% for i in result %}
+                    <tr>
+                        <td></strong>{{forloop.counter}}</td>
+                        <td></strong>{{i.name}}</td>
+                        <td>{{i.email}}</strong></td>
+                        
+                        <td>{{i.phone}}</td>
+                        <td>{{i.experience}}</td>
+                        
+                        <td>{{i.dob}}</td>
+                        <td>{{i.department}}</td>
+                        
+                        <td>{{i.qualification}}</td>
+        
+                        <td><a href="#" onclick="confirmDelete({{ i.id }})" class="text-danger">
+                          <i class="fas fa-trash-alt"></i> Remove
+                      </a></td>
+        
+                        
+                        
+        
+        
+                    </tr>
+                    
+                    {% endfor %}
+                </tbody>
+            </table>
+        </Center>
+        
+                </div>
+                {% include 'footer.html' %}
+
+
+                <script>
+                  function confirmDelete(id) {
+                      Swal.fire({
+                          title: "Are you sure?",
+                          text: "You won't be able to revert this!",
+                          icon: "warning",
+                          showCancelButton: true,
+                          confirmButtonColor: "#d33",
+                          cancelButtonColor: "#3085d6",
+                          confirmButtonText: "Yes, delete it!"
+                      }).then((result) => {
+                          if (result.isConfirmed) {
+                              window.location.href = `/delete/${id}/`;  // Correct URL for deletion
+                          }
+                      });
+                  }
+                  </script>
+                  
